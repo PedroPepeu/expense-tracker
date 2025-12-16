@@ -16,7 +16,7 @@ const (
 
 	// View States
 	TimerView sessionState = iota
-	spinnerView
+	SpinnerView
 
 	// App States
 	StateList = iota
@@ -129,4 +129,6 @@ type Model struct {
 	form        *huh.Form
 	formData    *FormData
 	indexToEdit int
+
+	Cursor int
 }

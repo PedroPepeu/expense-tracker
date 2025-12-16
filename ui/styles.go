@@ -37,4 +37,9 @@ var (
 	profitStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("42"))  // Green
 	lossStyle   = lipgloss.NewStyle().Foreground(lipgloss.Color("196")) // Red
 	dimmedStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("240")) // Grey for category
+
+	selectedStyle = lipgloss.NewStyle().
+			Foreground(lipgloss.Color("229")).
+			Background(lipgloss.Color("57")).
+			Bold(true)
 )
