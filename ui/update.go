@@ -21,39 +21,66 @@ func (m Model) Update(message tea.Msg) (tea.Model, tea.Cmd) {
 		form, cmd := m.form.Update(message)
 		if f, ok := form.(*huh.Form); ok {
 			m.form = f
-			cmds = append(cmds, cmd)
 
 			if m.form.State == huh.StateCompleted {
+				// Only save if Confirmed and Title is not empty
 				if m.formData.Confirm && m.formData.Title != "" {
 
+					// 1. CONVERT DATA (String -> Int/Time)
 					spentVal, _ := strconv.Atoi(m.formData.Spent)
 					instVal, _ := strconv.Atoi(m.formData.Installment)
 					isExpenseBool := m.formData.IsExpense == 1
 
-					newExpense := Expense{
-						Title:       m.formData.Title,
-						Category:    m.formData.Category,
-						Spent:       spentVal,
-						Installment: instVal,
-						Expense:     isExpenseBool,
-						CreatedAt:   time.Now(),
+					// Parse Date (default to Now if empty/invalid)
+					parsedDate, err := time.Parse("02-01-2006", m.formData.Date)
+					if err != nil {
+						parsedDate = time.Now()
 					}
 
+					// 2. LOGIC: NEW vs EDIT
 					if m.indexToEdit == -1 {
-						// Add
+						// Create NEW Expense
+						newExpense := Expense{
+							// Auto-increment ID based on list length
+							ID:          len(m.Expenses) + 1,
+							Title:       m.formData.Title,
+							Category:    m.formData.Category,
+							Spent:       spentVal,
+							Installment: instVal,
+							Expense:     isExpenseBool,
+							Date:        parsedDate,
+							CreatedAt:   time.Now(),
+						}
 						m.Expenses = append(m.Expenses, newExpense)
+
 					} else {
-						// Edit
-						m.Expenses[m.indexToEdit] = newExpense
+						// EDIT Existing Expense
+						m.Expenses[m.indexToEdit].Title = m.formData.Title
+						m.Expenses[m.indexToEdit].Category = m.formData.Category
+						m.Expenses[m.indexToEdit].Spent = spentVal
+						m.Expenses[m.indexToEdit].Installment = instVal
+						m.Expenses[m.indexToEdit].Expense = isExpenseBool
+						m.Expenses[m.indexToEdit].Date = parsedDate
+						// We don't update CreatedAt
+					}
+
+					// 3. SAVE TO JSON
+					// Make sure "store" folder exists in your project root!
+					if err := SaveExpensesToJSON("store/data.json", m.Expenses); err != nil {
+						// If you have a status message field, set it here.
+						// For now, we just print to console (which might be hidden by TUI)
+						// log.Printf("Error saving: %v", err)
 					}
 				}
 
+				// 4. RESET FORM
 				m.FormState = StateList
-				m.formData = &FormData{Installment: "1"}
-				m.form = NewExpenseForm(m.formData)
+				m.formData = &FormData{Installment: "1"} // Reset data
+				m.form = NewExpenseForm(m.formData)      // Recreate form
+				m.indexToEdit = -1
 			}
 		}
-		return m, tea.Batch(cmds...)
+		return m, cmd
 	}
 
 	// LIST

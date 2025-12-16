@@ -1,1 +1,32 @@
-[]
+[
+  {
+    "id": 0,
+    "title": "Grocery Run",
+    "category": 0,
+    "spent": 150,
+    "installment": 1,
+    "expense": true,
+    "date": "0001-01-01T00:00:00Z",
+    "created": "2023-10-27T10:00:00Z"
+  },
+  {
+    "id": 0,
+    "title": "Freelance Gig",
+    "category": 1,
+    "spent": 500,
+    "installment": 1,
+    "expense": false,
+    "date": "0001-01-01T00:00:00Z",
+    "created": "2023-10-28T14:30:00Z"
+  },
+  {
+    "id": 3,
+    "title": "Active",
+    "category": 1,
+    "spent": 10,
+    "installment": 2,
+    "expense": true,
+    "date": "2002-09-10T00:00:00Z",
+    "created": "2025-12-16T15:52:10.784792805-03:00"
+  }
+]

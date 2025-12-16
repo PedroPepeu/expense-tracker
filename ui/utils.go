@@ -1,11 +1,27 @@
 package ui
 
 import (
+	"encoding/json"
 	"errors"
+	"fmt"
+	"os"
 	"strconv"
 
 	"github.com/charmbracelet/bubbles/spinner"
 )
+
+// JSON Functions
+func SaveExpensesToJSON(path string, data []Expense) error {
+	// 1. Convert struct to JSON bytes
+	// Prefix "" and Indent "  " makes it readable (pretty print)
+	file, err := json.MarshalIndent(data, "", "  ")
+	if err != nil {
+		return err
+	}
+
+	// 2. Write to file (0644 is standard read/write permission)
+	return os.WriteFile(path, file, 0644)
+}
 
 // Validators
 func ValidateName(str string) error {
@@ -50,4 +66,24 @@ func (m Model) GetNewSpinner(index int) spinner.Model {
 	s.Style = spinnerStyle
 	s.Spinner = spinners[index]
 	return s
+}
+
+func GetCategoryName(id int) string {
+	switch id {
+	case 0:
+		return "Fun"
+	case 1:
+		return "Work"
+	case 2:
+		return "Study"
+	case 3:
+		return "Investment"
+	default:
+		return "Other"
+	}
+}
+
+// Helper to format currency
+func FormatAmount(amount int) string {
+	return fmt.Sprintf("$ %d.00", amount)
 }
